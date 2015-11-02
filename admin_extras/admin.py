@@ -4,8 +4,6 @@ from django.http import HttpResponseRedirect
 from django.contrib.auth import get_permission_codename
 from django.utils.translation import ugettext_lazy as _
 
-from .decorators import cache_result
-from .utils import get_models
 from . import conf
 
 
@@ -59,23 +57,3 @@ class ReadOnlyMixin(object):
 
 class ReadOnlyModelAdmin(ReadOnlyMixin, admin.ModelAdmin):
     pass
-
-
-def add_readonly_to_model_admin(model):
-    opts = admin.site._registry[model].__class__
-    # create new admin class from old class and readonly mixin
-    opt_new = type('ReadOnly%s' % opts.__name__, (ReadOnlyMixin, opts), {})
-    admin.site.unregister(model)
-    admin.site.register(model, opt_new)
-
-
-@cache_result()
-def add_readonly_to_models_admin():
-    for model in get_models():
-        if model in admin.site._registry.keys():
-            add_readonly_to_model_admin(model)
-
-
-# call auto register readonly admins
-if conf.AUTO_ADMIN_READONLY_CT:
-    add_readonly_to_models_admin()

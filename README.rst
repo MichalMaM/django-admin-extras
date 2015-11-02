@@ -10,5 +10,5 @@ Django-admin-extras v. 0.0.1
 Requirements
 ============
 
-- python >= 2.6
-- Django >= 1.6
+- python >= 2.7
+- Django >= 1.7

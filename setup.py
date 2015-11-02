@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 import admin_extras
 
 install_requires = [
-    'Django>=1.6',
+    'Django>=1.7',
     'markdown2',
 ]
 
@@ -36,7 +36,6 @@ setup(
         'License :: OSI Approved :: BSD License',
         "Operating System :: OS Independent",
         "Framework :: Django",
-        "Programming Language :: Python :: 2.6",
         "Programming Language :: Python :: 2.7",
         "Programming Language :: Python :: 3.2",
         "Programming Language :: Python :: 3.3",
