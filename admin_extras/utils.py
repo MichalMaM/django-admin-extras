@@ -12,8 +12,8 @@ from . import conf
 logger = logging.getLogger(__name__)
 
 
-def ct_str_natural_key(contenttype):
-    return "%s.%s" % contenttype.natural_key()
+def ct_str_natural_key(data):
+    return "%s.%s" % data
 
 
 def get_models():
@@ -22,12 +22,8 @@ def get_models():
         return dj_models
     out = []
     for m in dj_models:
-        try:
-            ct = ContentType.objects.get_for_model(m)
-        except Exception:
-            logger.error("Can not get content_type for model", extra={'model': m}, exc_info=True)
-            continue
-        str_natural_key = ct_str_natural_key(ct)
+        opts = ContentType.objects._get_opts(m, for_concrete_model=True)
+        str_natural_key = ct_str_natural_key((opts.app_label, opts.model_name,))
         if str_natural_key in conf.AUTO_ADMIN_READONLY_CT:
             out.append(m)
     return out
