@@ -9,7 +9,7 @@ from . import conf
 
 class ReadOnlyMixin(object):
     read_only_per_codename = conf.READONLY_CODENAME
-    drop_actions = ('delete_selected')
+    drop_actions = ('delete_selected',)
 
     def has_add_permission(self, request):
         if self.has_read_only_permission(request):

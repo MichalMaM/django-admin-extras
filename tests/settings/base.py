@@ -137,5 +137,5 @@ INSTALLED_APPS = (
 TEST_RUNNER = 'django.test.runner.DiscoverRunner'
 
 ADMIN_EXTRAS_AUTO_ADMIN_READONLY_CT = (
-    'django.contrib.flatpages.flatpage',
+    'flatpages.flatpage',
 )
