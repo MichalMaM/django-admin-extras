@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import copy
 from django.contrib.auth.models import User, Permission
 from django.contrib.sites.models import Site
 from django.contrib.flatpages.models import FlatPage
@@ -64,3 +65,20 @@ def add_change_permission(user, model, readonly=False):
             ),
         )
     user.user_permissions.add(*perms)
+
+
+class FakeDefaultPermsOpts(object):
+    default_permissions = ('add', 'delete', 'change')
+
+
+class FakeDefaultPermsWithReadOnlyOpts(object):
+    default_permissions = ('add', 'delete', 'change', conf.READONLY_CODENAME)
+
+
+def get_default_perms(opts):
+    return copy.copy(opts.default_permissions)
+
+
+def get_default_perms_without_readonly(opts):
+    opts.default_permissions.remove(conf.READONLY_CODENAME)
+    return copy.copy(opts.default_permissions)
