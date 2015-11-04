@@ -45,6 +45,16 @@ class TestReadOnlyAdmin(TestCase):
         tools.assert_equals(opts.__name__, "ReadOnlyFlatPageAdmin")
         tools.assert_true(issubclass(opts, (ReadOnlyMixin, FlatPageAdmin)))
 
+    def test_readonly_staff_user_has_excluded_spec_actions(self):
+        add_change_permission(self.staff_user, self.model_for_read_only, readonly=True)
+        admin_class = admin.site._registry[self.model_for_read_only].__class__
+        admin_instance = admin_class(self.model_for_read_only, admin.site)
+        url = reverse('admin:flatpages_flatpage_changelist')
+        request = self.rf.get(url)
+        request.user = self.staff_user
+        for action in ReadOnlyMixin.drop_actions:
+            tools.assert_not_in(action, admin_instance.get_actions(request))
+
     def test_readonly_staff_user_get_change_flatpage(self):
         add_change_permission(self.staff_user, self.model_for_read_only, readonly=True)
         url = reverse('admin:flatpages_flatpage_change', args=(self.flatpage.id,))
@@ -77,6 +87,15 @@ class TestReadOnlyAdmin(TestCase):
         tools.assert_equals(self.flatpage.content, FlatPage.objects.get(pk=self.flatpage.pk).content)
         self.assertRedirects(response, url)
 
+    def test_superuser_has_all_actions(self):
+        admin_class = admin.site._registry[self.model_for_read_only].__class__
+        admin_instance = admin_class(self.model_for_read_only, admin.site)
+        url = reverse('admin:flatpages_flatpage_changelist')
+        request = self.rf.get(url)
+        request.user = self.superuser
+        for action in ReadOnlyMixin.drop_actions:
+            tools.assert_in(action, admin_instance.get_actions(request))
+
     def test_superuser_get_change_flatpage(self):
         url = reverse('admin:flatpages_flatpage_change', args=(self.flatpage.id,))
         c = Client()
@@ -108,6 +127,16 @@ class TestReadOnlyAdmin(TestCase):
         tools.assert_true(self.superuser.is_authenticated())
         tools.assert_equals(new_content, FlatPage.objects.get(pk=self.flatpage.pk).content)
         self.assertRedirects(response, redir_url)
+
+    def test_staff_user_with_perm_has_all_actions(self):
+        add_change_permission(self.staff_user, self.model_for_read_only)
+        admin_class = admin.site._registry[self.model_for_read_only].__class__
+        admin_instance = admin_class(self.model_for_read_only, admin.site)
+        url = reverse('admin:flatpages_flatpage_changelist')
+        request = self.rf.get(url)
+        request.user = self.staff_user
+        for action in ReadOnlyMixin.drop_actions:
+            tools.assert_in(action, admin_instance.get_actions(request))
 
     def test_staff_user_with_perm_get_change_flatpage(self):
         add_change_permission(self.staff_user, self.model_for_read_only)

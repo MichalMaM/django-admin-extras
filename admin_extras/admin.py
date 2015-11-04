@@ -34,7 +34,8 @@ class ReadOnlyMixin(object):
         actions = super(ReadOnlyMixin, self).get_actions(request)
         if self.has_read_only_permission(request):
             for action in self.drop_actions:
-                action in actions and actions.remove(action)
+                if action in actions:
+                    del actions[action]
         return actions
 
     def disable_editing(self):
