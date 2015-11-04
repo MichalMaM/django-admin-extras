@@ -31,10 +31,12 @@ def get_models():
 
 def add_readonly_to_model_admin(model):
     opts = admin.site._registry[model].__class__
-    # create new admin class from old class and readonly mixin
-    opt_new = type('ReadOnly%s' % opts.__name__, (ReadOnlyMixin, opts), {})
-    admin.site.unregister(model)
-    admin.site.register(model, opt_new)
+    # if ReadOnlyMixin is not in ancestors create new admin class
+    if not issubclass(opts, ReadOnlyMixin):
+        # create new admin class from old class and readonly mixin
+        opt_new = type('ReadOnly%s' % opts.__name__, (ReadOnlyMixin, opts), {})
+        admin.site.unregister(model)
+        admin.site.register(model, opt_new)
 
 
 @cache_result()
